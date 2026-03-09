@@ -27,9 +27,6 @@ b8 motor_disable_fn()
 #define M_Enable motor_enable_fn()   // Active-high enable
 #define M_Disable motor_disable_fn() // Active-low disable
 
-// systick
-#define SYSTICK_FREQUENCY (9.0f * 1e6f) // 9MHz when using 72MHz clock with 8 divider
-
 extern const u16 sine_array[200];
 
 /************************************ Types ******************************************/

@@ -19,10 +19,6 @@ FOC_Controller_s foc_2804 = {
 	.open_loop_timestamp = 0,
 };
 
-void Motor_init(BLDCMotor_s *motor);
-i32 alignSensor(BLDCMotor_s *motor, FOC_Controller_s *foc_ctl, MagneticSensor_s *sensor);
-void setPhaseVoltage(f32 Uq, f32 Ud, f32 angle_electrical, BLDCMotor_s *motor);
-
 void Motor_init(BLDCMotor_s *motor)
 {
 	printf("MOT: Init\r\n");

@@ -36,4 +36,7 @@
 #define _3PI_2 4.71238898038
 #define _PI_6 0.52359877559
 
+// systick
+#define SYSTICK_FREQUENCY (9.0f * 1e6f) // 9MHz when using 72MHz clock with 8 divider
+
 #endif
