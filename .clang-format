@@ -1,0 +1,57 @@
+---
+# .clang-format — MyFOCLib code style
+# Targets: C11, embedded motor-control project
+# Apply with: clang-format -i <file.c>
+#             find src include tests examples -name '*.[ch]' | xargs clang-format -i
+
+Language:        Cpp         # covers C as well
+BasedOnStyle:    LLVM
+
+# Indentation
+IndentWidth:               4
+TabWidth:                  4
+UseTab:                    Never
+ContinuationIndentWidth:   4
+
+# Column limit
+ColumnLimit:               100
+
+# Brace style — Allman (opening brace on its own line for functions)
+BreakBeforeBraces:  Allman
+
+# Function / call alignment
+AlignAfterOpenBracket:         Align
+AlignConsecutiveAssignments:   Consecutive
+AlignConsecutiveDeclarations:  false
+AlignOperands:                 Align
+AlignTrailingComments:         true
+
+# Short blocks / functions / lambdas on one line
+AllowShortBlocksOnASingleLine:     Never
+AllowShortFunctionsOnASingleLine:  None
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine:      false
+
+# Pointer alignment
+PointerAlignment:    Right  # e.g.  float *ptr
+
+# Include sorting
+SortIncludes:        CaseSensitive
+IncludeBlocks:       Regroup
+
+# Spaces
+SpaceAfterCStyleCast:            false
+SpaceBeforeParens:               ControlStatements
+SpacesInParentheses:             false
+SpacesInSquareBrackets:          false
+SpaceBeforeSquareBrackets:       false
+
+# Comment formatting
+ReflowComments:  true
+
+# Max empty lines
+MaxEmptyLinesToKeep:  1
+
+# Penalty overrides (keep long casts readable)
+PenaltyBreakBeforeFirstCallParameter: 100
+PenaltyReturnTypeOnItsOwnLine:        200

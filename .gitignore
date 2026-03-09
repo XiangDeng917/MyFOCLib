@@ -1,0 +1,62 @@
+# C / CMake — generated build artefacts
+*.o
+*.a
+*.so
+*.so.*
+*.dylib
+*.dll
+*.exe
+*.out
+*.map
+*.elf
+*.bin
+*.hex
+
+# CMake build directories
+build/
+build-*/
+cmake-build-*/
+_build/
+out/
+
+# CMake generated files
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+install_manifest.txt
+CTestTestfile.cmake
+Testing/
+Makefile
+
+# Ninja
+.ninja_deps
+.ninja_log
+build.ninja
+
+# Compiler cache
+.ccache/
+
+# Editor / IDE artefacts
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+*.orig
+*.bak
+*.DS_Store
+
+# clangd / compile_commands.json (optional — some prefer to commit this)
+compile_commands.json
+.clangd/
+
+# Doxygen generated docs
+docs/html/
+docs/latex/
+docs/xml/
+
+# Coverage reports
+*.gcno
+*.gcda
+*.lcov
+coverage/
