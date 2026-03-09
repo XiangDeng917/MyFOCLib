@@ -3,25 +3,13 @@
 
 #include <stdint.h>
 #include <math.h>
-
-#define u8 uint8_t
-#define u16 uint16_t
-#define u32 uint32_t
-#define i8 int8_t
-#define i16 int16_t
-#define i32 int32_t
-#define f32 float
-#define b8 u8
-#define b16 u16
-#define b32 u32
-
-#include "BLDCMotor.h"
-#include "MagneticSensor.h"
-#include "my_filter.h"
+#include "myTypes.h"
 #include "pid.h"
 
-b8 motor_enable_fn(void);
-b8 motor_disable_fn(void);
+// encoder
+#define M_AS5600 1
+#define M_TLE5012B 0
+// ...
 
 /*
 example(gd32e23):
@@ -36,35 +24,8 @@ b8 motor_disable_fn()
 }
 */
 
-// encoder
-#define M_AS5600 1
-#define M_TLE5012B 0
-// ...
-
 #define M_Enable motor_enable_fn()   // Active-high enable
 #define M_Disable motor_disable_fn() // Active-low disable
-
-/******************************************************************************/
-// Small math helpers
-#define _sign(a) (((a) < 0) ? -1 : ((a) > 0))
-#define _round(x) ((x) >= 0 ? (i32)((x) + 0.5) : (i32)((x) - 0.5))
-#define _constrain(value, min, max) ((value) < (min) ? (min) : ((value) > (max) ? (max) : (value)))
-#define _sqrt(a) (_sqrtApprox(a))
-#define _isset(a) ((a) != (NOT_SET))
-
-// utility defines
-#define _2_SQRT3 1.15470053838 // 2/sqrt(3) for voltage calculations
-#define _SQRT3 1.73205080757   // sqrt(3) for voltage calculations
-#define _1_SQRT3 0.57735026919 // 1/sqrt(3) for voltage calculations
-#define _SQRT3_2 0.86602540378
-#define _SQRT2 1.41421356237
-#define _120_D2R 2.09439510239 // 120 degrees to radians
-#define _PI 3.14159265359
-#define _PI_2 1.57079632679
-#define _PI_3 1.0471975512
-#define _2PI 6.28318530718
-#define _3PI_2 4.71238898038
-#define _PI_6 0.52359877559
 
 // systick
 #define SYSTICK_FREQUENCY (9.0f * 1e6f) // 9MHz when using 72MHz clock with 8 divider
@@ -113,22 +74,46 @@ typedef enum
     Type_foc_current //!< torque control using dq currents
 } TorqueControlType;
 
+typedef enum
+{
+    CW = 1,     // clockwise
+    CCW = -1,   // counter clockwise
+    UNKNOWN = 0 // not yet known or invalid state
+} Direction;
+
+typedef struct
+{
+    i32 cpr;                     // Counts per revolution.
+    f32 full_rotation_offset;    // Multi-turn angle offset.
+    i32 angle_prev_i32;          // Previous raw angle count.
+    u32 velocity_calc_timestamp; // Timestamp for velocity update.
+    f32 angle_prev_f32;          // Previous angle in radians.
+} MagneticSensor_s;
+
+typedef struct
+{
+	u16 pole_pairs;
+	f32 voltage_power_supply;
+	f32 voltage_sensor_align;
+	f32 voltage_limit;
+} BLDCMotor_s;
+
 typedef struct
 {
     f32 shaft_angle; //!< current motor angle
     f32 shaft_velocity;
     f32 shaft_velocity_prev;
-
+    
     f32 shaft_angle_target;
     f32 shaft_velocity_target;
     f32 current_target;
-
+    
     f32 electrical_angle;
     f32 zero_electric_angle;
 
     f32 sensor_offset;
     Direction sensor_direction;
-
+    
     DQVoltage_s voltage;
     DQCurrent_s current;
     TorqueControlType torque_type;
@@ -136,10 +121,21 @@ typedef struct
     f32 target;
     f32 velocity_limit;
     u32 open_loop_timestamp;
-
+    
 } FOC_Controller_s;
 
 // Functions
+
+// User-provided platform hooks
+//motor
+b8 motor_enable_fn(void);
+b8 motor_disable_fn(void);
+// systick
+u32 getSysTickVal(void);
+u32 getSysTickLoad(void);
+// Hardware interface
+void setPWM(float duty_a, float duty_b, float duty_c);
+u16 getRawCount();
 
 f32 _sin(f32 a);
 f32 _cos(f32 a);
@@ -159,14 +155,13 @@ f32 FOC_angleOpenloop(f32 target_angle, FOC_Controller_s *foc_ctl, BLDCMotor_s *
 void FOC_closedLoop(FOC_Controller_s *foc_ctl, BLDCMotor_s *motor);
 void FOC_init(FOC_Controller_s *foc_ctl, BLDCMotor_s *motor, MagneticSensor_s *sensor);
 
-// User-provided platform hooks
+//sensor
+f32 getAngle(MagneticSensor_s *sensor);
+f32 getVelocity(MagneticSensor_s *sensor);
 
-// systick
-u32 getSysTickVal(void);
-u32 getSysTickLoad(void);
-
-// Hardware interface
-void setPWM(float duty_a, float duty_b, float duty_c);
-u16 getRawCount();
+//motor
+void Motor_init(BLDCMotor_s *motor);
+i32 alignSensor(BLDCMotor_s *motor, FOC_Controller_s *foc_ctl, MagneticSensor_s *sensor);
+void setPhaseVoltage(f32 Uq, f32 Ud, f32 angle_electrical, BLDCMotor_s *motor);
 
 #endif

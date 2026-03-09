@@ -1,5 +1,5 @@
 
-#include "MagneticSensor.h"
+#include "foc.h"
 
 MagneticSensor_s AS5600 =
 	{

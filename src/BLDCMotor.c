@@ -1,5 +1,5 @@
 
-#include "BLDCMotor.h"
+#include "foc.h"
 
 extern f32 target;
 

@@ -1,7 +1,7 @@
 #ifndef PID_H
 #define PID_H
 
-#include "foc.h"
+#include "myTypes.h"
 
 typedef struct
 {
